@@ -1,0 +1,130 @@
+﻿<Window x:Class="WindowsApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WindowsApp"
+        mc:Ignorable="d"
+        xmlns:webview2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="MainWindow" Closing="Window_Closing" MinWidth="160" MinHeight="90"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize">
+
+    <Grid>
+        <!-- 自定义标题栏 -->
+        <DockPanel x:Name="customHeaderBar" Height="30" VerticalAlignment="Top" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Margin="5">
+            <TextBlock x:Name="tile" Text="Custom Title Bar" VerticalAlignment="Center" Margin="15,0" />
+            <!-- 关闭按钮 -->
+            <Button x:Name="close" Content="×" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="CloseButton_Click" BorderThickness="0" FontSize="18"/>
+            <!-- 最大化/还原按钮 -->
+            <Button x:Name="max" Content="◻" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MaximizeRestoreButton_Click" BorderThickness="0" FontSize="15"/>
+            <!-- 最小化按钮 -->
+            <Button x:Name="min" Content="-" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MinimizeButton_Click" BorderThickness="0" FontSize="20"/>
+        </DockPanel>
+
+        <!-- 窗口内容 -->
+        <Grid Margin="5,35,5,5" Background="White">
+            <webview2:WebView2 x:Name="webView" Visibility="Collapsed"/>
+            <Grid x:Name="loadingIndicator" Background="White" Visibility="Visible">
+                <Image x:Name="WelcomeImg" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None" />
+            </Grid>
+        </Grid>
+
+        <!-- 调整大小的边框 -->
+        <!-- 左侧边框 -->
+        <Grid>
+            <Border Width="5" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Left" MouseLeftButtonDown="ResizeLeft" Margin="0,5,0,5">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 右侧边框 -->
+            <Border Width="5" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Right" MouseLeftButtonDown="ResizeRight" Margin="0,5,0,5">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 顶部边框 -->
+            <Border Height="5" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" MouseLeftButtonDown="ResizeTop" Margin="5,0,5,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 底部边框 -->
+            <Border Height="5" Cursor="SizeNS" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" MouseLeftButtonDown="ResizeBottom" Margin="5,0,5,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 左上角 -->
+            <Border Width="5" Height="5" Cursor="SizeNWSE" VerticalAlignment="Top" HorizontalAlignment="Left" MouseLeftButtonDown="ResizeTopLeft">
+                <Border.Background>
+                    <RadialGradientBrush GradientOrigin="1,1" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 右上角 -->
+            <Border Width="5" Height="5" Cursor="SizeNESW" VerticalAlignment="Top" HorizontalAlignment="Right" MouseLeftButtonDown="ResizeTopRight">
+                <Border.Background>
+                    <RadialGradientBrush GradientOrigin="0,1" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 左下角 -->
+            <Border Width="5" Height="5" Cursor="SizeNESW" VerticalAlignment="Bottom" HorizontalAlignment="Left" MouseLeftButtonDown="ResizeBottomLeft">
+                <Border.Background>
+                    <RadialGradientBrush GradientOrigin="1,0" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        <Grid>
+            <!-- 右下角 -->
+            <Border Width="5" Height="5" Cursor="SizeNWSE" VerticalAlignment="Bottom" HorizontalAlignment="Right" MouseLeftButtonDown="ResizeBottomRight">
+                <Border.Background>
+                    <RadialGradientBrush GradientOrigin="0,0" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#4C000000" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+        
+        
+        
+        
+        
+        
+        
+        
+    </Grid>
+</Window>
