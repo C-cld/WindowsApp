@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:webview2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="MainWindow" Closing="Window_Closing" MinWidth="160" MinHeight="90"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize">
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" SizeChanged="Window_SizeChanged" LocationChanged="Window_LocationChanged">
 
     <Grid>
         <!-- 自定义标题栏 -->
@@ -19,6 +19,8 @@
             <Button x:Name="max" Content="◻" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MaximizeRestoreButton_Click" BorderThickness="0" FontSize="15"/>
             <!-- 最小化按钮 -->
             <Button x:Name="min" Content="-" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MinimizeButton_Click" BorderThickness="0" FontSize="20"/>
+            <!-- 侧边栏按钮◨ -->
+            <Button x:Name="sideBar" Content="◧" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="SideBarButton_Click" BorderThickness="0" FontSize="15"/>
         </DockPanel>
 
         <!-- 窗口内容 -->

@@ -23,6 +23,8 @@ namespace WindowsApp
     public partial class MainWindow : Window
     {
         private Config config;
+        private static readonly double ScreenWidth = SystemParameters.PrimaryScreenWidth;
+        private static readonly double ScreenHeight = SystemParameters.PrimaryScreenHeight;
         public MainWindow()
         {
             InitializeComponent();
@@ -43,11 +45,8 @@ namespace WindowsApp
             }
             
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            double screenWidth = SystemParameters.PrimaryScreenWidth;
-            double screenHeight = SystemParameters.PrimaryScreenHeight;
-            // this.tile.Text = config.title;
-            this.Width = screenWidth * 0.75;
-            this.Height = screenHeight * 0.75;
+            this.Width = ScreenWidth * 0.75;
+            this.Height = ScreenHeight * 0.75;
             this.tile.Text = config.title;
 
             InitTheme();
@@ -76,6 +75,7 @@ namespace WindowsApp
             this.close.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
             this.max.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
             this.min.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
+            this.sideBar.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
 
             string bgColor = config.theme.bgColor.Replace("#", "");
             r = Convert.ToByte(bgColor.Substring(0, 2), 16);
@@ -85,6 +85,7 @@ namespace WindowsApp
             this.close.Background = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
             this.max.Background = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
             this.min.Background = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
+            this.sideBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
         }
 
         private async void InitializeContentAsync()
@@ -189,6 +190,15 @@ namespace WindowsApp
             this.WindowState = WindowState.Minimized;
         }
 
+        private void SideBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Width = ScreenWidth * 0.25;
+            this.Height = ScreenHeight - TaskBarUtil.GetTaskbarHeight();
+            this.Left = ScreenWidth - this.Width;
+            this.Top = 0;
+            this.Topmost = true;
+        }
+
         private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
         {
             if (this.WindowState == WindowState.Maximized)
@@ -261,6 +271,14 @@ namespace WindowsApp
         private void ResizeBottomLeft(object sender, MouseButtonEventArgs e) => ResizeWindow(ResizeDirection.BottomLeft);
         private void ResizeBottomRight(object sender, MouseButtonEventArgs e) => ResizeWindow(ResizeDirection.BottomRight);
 
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            this.Topmost = false;
+        }
 
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            this.Topmost = false;
+        }
     }
 }
