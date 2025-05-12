@@ -26,6 +26,8 @@ namespace WindowsApp
         private Config config;
         private static readonly double ScreenWidth = SystemParameters.PrimaryScreenWidth;
         private static readonly double ScreenHeight = SystemParameters.PrimaryScreenHeight;
+
+        private double[] lastPosition = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -188,11 +190,28 @@ namespace WindowsApp
 
         private void SideBarButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Width = ScreenWidth * 0.2;
-            this.Height = ScreenHeight - TaskBarUtil.GetTaskbarHeight();
-            this.Left = ScreenWidth - this.Width;
-            this.Top = 0;
-            this.Topmost = true;
+            if (lastPosition == null)
+            {
+                lastPosition = new double[] { this.Left, this.Top, this.Width, this.Height };
+
+                this.Width = ScreenWidth * 0.2;
+                this.Height = ScreenHeight - TaskBarUtil.GetTaskbarHeight();
+                this.Left = ScreenWidth - this.Width;
+                this.Top = 0;
+                this.Topmost = true;
+                
+            }
+            else
+            {
+                this.Topmost = false;
+                this.Left = lastPosition[0];
+                this.Top = lastPosition[1];
+                this.Width = lastPosition[2];
+                this.Height = lastPosition[3];
+
+                lastPosition = null;
+            }
+            
         }
 
         private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
