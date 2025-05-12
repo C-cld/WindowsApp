@@ -51,23 +51,14 @@ namespace WindowsApp
                 LoadConfig(configFile);
             }
             
-            // this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             currPosition = new double[] { config.position[0], config.position[1], config.position[2], config.position[3] };
             this.Left = config.position[0];
             this.Top = config.position[1];
             this.Width = config.position[2];
             this.Height = config.position[3];
-            //this.Width = ScreenWidth * 0.75;
-            //this.Height = ScreenHeight * 0.75;
             this.tile.Text = config.title;
 
             InitTheme();
-
-            //string iconPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.icon;
-            //if (File.Exists(iconPath))
-            //{
-            //    this.Icon = new BitmapImage(new Uri(config.icon, UriKind.RelativeOrAbsolute));
-            //}
 
             string welcomeImgPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.welcomeImg;
             if (File.Exists(welcomeImgPath))
@@ -192,6 +183,11 @@ namespace WindowsApp
             this.WindowState = WindowState.Minimized;
         }
 
+        /// <summary>
+        /// 侧边栏
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SideBarButton_Click(object sender, RoutedEventArgs e)
         {
             if (onSide)
@@ -215,6 +211,11 @@ namespace WindowsApp
             
         }
 
+        /// <summary>
+        /// 最大化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
         {
             if (onMax)
@@ -235,6 +236,11 @@ namespace WindowsApp
             }
         }
 
+        /// <summary>
+        /// 拖动窗口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -298,14 +304,5 @@ namespace WindowsApp
         private void ResizeBottomLeft(object sender, MouseButtonEventArgs e) => ResizeWindow(ResizeDirection.BottomLeft);
         private void ResizeBottomRight(object sender, MouseButtonEventArgs e) => ResizeWindow(ResizeDirection.BottomRight);
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // this.Topmost = false;
-        }
-
-        private void Window_LocationChanged(object sender, EventArgs e)
-        {
-            // this.Topmost = false;
-        }
     }
 }

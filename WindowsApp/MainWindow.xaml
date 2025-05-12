@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:webview2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="MainWindow" Closing="Window_Closing" MinWidth="160" MinHeight="90"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" SizeChanged="Window_SizeChanged" LocationChanged="Window_LocationChanged">
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize">
 
     <Grid>
         <!-- 自定义标题栏 -->
