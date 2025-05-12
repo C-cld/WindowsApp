@@ -22,6 +22,7 @@ namespace WindowsApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string configFile = "config.json";
         private Config config;
         private static readonly double ScreenWidth = SystemParameters.PrimaryScreenWidth;
         private static readonly double ScreenHeight = SystemParameters.PrimaryScreenHeight;
@@ -37,16 +38,21 @@ namespace WindowsApp
             string[] args = Environment.GetCommandLineArgs();
             if (args == null || args.Length <= 1)
             {
-                LoadConfig("config.json");
+                LoadConfig(configFile);
             }
             else
             {
-                LoadConfig(args[1]);
+                configFile = args[1];
+                LoadConfig(configFile);
             }
             
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Width = ScreenWidth * 0.75;
-            this.Height = ScreenHeight * 0.75;
+            // this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.Left = config.position[0];
+            this.Top = config.position[1];
+            this.Width = config.position[2];
+            this.Height = config.position[3];
+            //this.Width = ScreenWidth * 0.75;
+            //this.Height = ScreenHeight * 0.75;
             this.tile.Text = config.title;
 
             InitTheme();
@@ -124,18 +130,6 @@ namespace WindowsApp
             Process.Start(psi);
         }
 
-        private async void DisableContextMenue()
-        {
-            await webView.CoreWebView2.ExecuteScriptAsync(
-                @"
-                    document.addEventListener('contextmenu', function(event) {
-                        event.preventDefault();
-                    }, false);
-                "
-            );
-            // await Task.Delay(600);
-        }
-
         public void LoadConfig(string configPath)
         {
             if (File.Exists(configPath))
@@ -146,6 +140,10 @@ namespace WindowsApp
                 if (config.theme == null)
                 {
                     config.theme = new Theme("#000000", "#FFFFFF");
+                }
+                if (config.position == null)
+                {
+                    config.position = new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 };
                 }
             }
             else
@@ -161,24 +159,22 @@ namespace WindowsApp
 
         }
 
-        //public void SaveConfig()
-        //{
-        //    var options = new JsonSerializerOptions
-        //    {
-        //        WriteIndented = true,
-        //    };
-        //    string jsonString = JsonSerializer.Serialize(config, options);
-        //    File.WriteAllText("config.json", jsonString);
-        //}
+        public void SaveConfig()
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+            string jsonString = JsonSerializer.Serialize(config, options);
+            File.WriteAllText(configFile, jsonString);
+        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             webView.Dispose();
+            config.position = new double[] { this.Left, this.Top, this.Width, this.Height };
+            SaveConfig();
         }
-
-
-
-
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -192,7 +188,7 @@ namespace WindowsApp
 
         private void SideBarButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Width = ScreenWidth * 0.25;
+            this.Width = ScreenWidth * 0.2;
             this.Height = ScreenHeight - TaskBarUtil.GetTaskbarHeight();
             this.Left = ScreenWidth - this.Width;
             this.Top = 0;
