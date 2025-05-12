@@ -27,7 +27,10 @@ namespace WindowsApp
         private static readonly double ScreenWidth = SystemParameters.PrimaryScreenWidth;
         private static readonly double ScreenHeight = SystemParameters.PrimaryScreenHeight;
 
-        private double[] lastPosition = null;
+        private bool onSide = false;
+        private bool onMax = false;
+
+        private double[] currPosition = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -49,6 +52,7 @@ namespace WindowsApp
             }
             
             // this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            currPosition = new double[] { config.position[0], config.position[1], config.position[2], config.position[3] };
             this.Left = config.position[0];
             this.Top = config.position[1];
             this.Width = config.position[2];
@@ -190,39 +194,44 @@ namespace WindowsApp
 
         private void SideBarButton_Click(object sender, RoutedEventArgs e)
         {
-            if (lastPosition == null)
+            if (onSide)
             {
-                lastPosition = new double[] { this.Left, this.Top, this.Width, this.Height };
-
+                this.Topmost = false;
+                this.Left = currPosition[0];
+                this.Top = currPosition[1];
+                this.Width = currPosition[2];
+                this.Height = currPosition[3];
+                this.onSide = false;
+            }
+            else
+            {
                 this.Width = ScreenWidth * 0.2;
                 this.Height = ScreenHeight - TaskBarUtil.GetTaskbarHeight();
                 this.Left = ScreenWidth - this.Width;
                 this.Top = 0;
                 this.Topmost = true;
-                
-            }
-            else
-            {
-                this.Topmost = false;
-                this.Left = lastPosition[0];
-                this.Top = lastPosition[1];
-                this.Width = lastPosition[2];
-                this.Height = lastPosition[3];
-
-                lastPosition = null;
+                this.onSide = true;
             }
             
         }
 
         private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
         {
-            if (this.WindowState == WindowState.Maximized)
+            if (onMax)
             {
-                this.WindowState = WindowState.Normal;
+                this.Left = currPosition[0];
+                this.Top = currPosition[1];
+                this.Width = currPosition[2];
+                this.Height = currPosition[3];
+                this.onMax = false;
             }
             else
             {
-                this.WindowState = WindowState.Maximized;
+                this.Width = ScreenWidth;
+                this.Height = ScreenHeight - TaskBarUtil.GetTaskbarHeight();
+                this.Left = 0;
+                this.Top = 0;
+                this.onMax = true;
             }
         }
 
@@ -231,6 +240,7 @@ namespace WindowsApp
             if (e.ChangedButton == MouseButton.Left)
             {
                 this.DragMove();
+                this.currPosition = new double[] { this.Left, this.Top, this.Width, this.Height };
             }
         }
 
@@ -244,7 +254,7 @@ namespace WindowsApp
         // 调整窗口大小的方向
         private void ResizeWindow(ResizeDirection direction)
         {
-            if (WindowState == WindowState.Maximized)
+            if (onMax || onSide)
                 return;
 
             IntPtr handle = new WindowInteropHelper(this).Handle;
@@ -252,6 +262,8 @@ namespace WindowsApp
 
             ReleaseCapture();
             SendMessage(handle, 0x112, (IntPtr)direction, IntPtr.Zero);
+
+            this.currPosition = new double[] { this.Left, this.Top, this.Width, this.Height };
         }
 
         private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -288,12 +300,12 @@ namespace WindowsApp
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.Topmost = false;
+            // this.Topmost = false;
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            this.Topmost = false;
+            // this.Topmost = false;
         }
     }
 }
