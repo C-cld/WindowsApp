@@ -14,11 +14,11 @@
         <DockPanel x:Name="customHeaderBar" Height="30" VerticalAlignment="Top" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Margin="5">
             <TextBlock x:Name="tile" Text="Custom Title Bar" VerticalAlignment="Center" Margin="15,0" />
             <!-- 关闭按钮 -->
-            <Button x:Name="close" Content="×" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="CloseButton_Click" BorderThickness="0" FontSize="18"/>
+            <Button x:Name="close" Content="✕" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="CloseButton_Click" BorderThickness="0" FontSize="15"/>
             <!-- 最大化/还原按钮 -->
-            <Button x:Name="max" Content="◻" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MaximizeRestoreButton_Click" BorderThickness="0" FontSize="15"/>
+            <Button x:Name="max" Content="◱" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MaximizeRestoreButton_Click" BorderThickness="0" FontSize="15"/>
             <!-- 最小化按钮 -->
-            <Button x:Name="min" Content="-" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MinimizeButton_Click" BorderThickness="0" FontSize="20"/>
+            <Button x:Name="min" Content="–" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="MinimizeButton_Click" BorderThickness="0" FontSize="15"/>
             <!-- 侧边栏按钮◨ -->
             <Button x:Name="sideBar" Content="◧" DockPanel.Dock="Right" Width="30" HorizontalAlignment="Right" Click="SideBarButton_Click" BorderThickness="0" FontSize="15"/>
         </DockPanel>
@@ -120,13 +120,5 @@
                 </Border.Background>
             </Border>
         </Grid>
-        
-        
-        
-        
-        
-        
-        
-        
     </Grid>
 </Window>

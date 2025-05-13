@@ -3,20 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:WindowsApp"
              StartupUri="MainWindow.xaml">
-    <!--<Application.Resources>
+    <Application.Resources>
         <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
-            <Border x:Name="border" >
+            <Border x:Name="border" Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Padding="{TemplateBinding Padding}">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <ControlTemplate.Triggers>
-                --><!-- 悬停时修改背景色 --><!--
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="border" Property="Background" Value="#e6e7e8"/>
+                    <Setter TargetName="border"  Property="Background" Value="#D3D3D3"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
         <Style TargetType="Button">
             <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
         </Style>
-    </Application.Resources>-->
+    </Application.Resources>
 </Application>

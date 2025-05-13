@@ -1,6 +1,10 @@
 {
-  "title": "通义",
-  "uri": "https://tongyi.aliyun.com/qianwen/",
-  "icon": "img\\icon32.ico",
-  "welcomeImg": "img\\welcome.png"
+  "title": "DeepSeek",
+  "uri": "https://chat.deepseek.com/",
+  "icon": "image\\DeepSeek.ico",
+  "welcomeImg": "",
+  "theme": {
+    "bgColor": "#FFFFFF",
+    "foreColor": "#000000"
+  }
 }

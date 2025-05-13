@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfAnimatedGif;
 
 namespace WindowsApp
 {
@@ -63,7 +64,12 @@ namespace WindowsApp
             string welcomeImgPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.welcomeImg;
             if (File.Exists(welcomeImgPath))
             {
-                this.WelcomeImg.Source = new BitmapImage(new Uri(welcomeImgPath, UriKind.RelativeOrAbsolute));
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(welcomeImgPath, UriKind.RelativeOrAbsolute);
+                image.EndInit();
+                ImageBehavior.SetAnimatedSource(this.WelcomeImg, image);
+                // this.WelcomeImg.Source = new BitmapImage(new Uri(welcomeImgPath, UriKind.RelativeOrAbsolute));
             }
             
         }
@@ -198,6 +204,7 @@ namespace WindowsApp
                 this.Width = currPosition[2];
                 this.Height = currPosition[3];
                 this.onSide = false;
+                this.onMax = false;
             }
             else
             {
@@ -207,6 +214,7 @@ namespace WindowsApp
                 this.Top = 0;
                 this.Topmost = true;
                 this.onSide = true;
+                this.onMax = false;
             }
             
         }
@@ -225,6 +233,7 @@ namespace WindowsApp
                 this.Width = currPosition[2];
                 this.Height = currPosition[3];
                 this.onMax = false;
+                this.onSide = false;
             }
             else
             {
@@ -233,6 +242,7 @@ namespace WindowsApp
                 this.Left = 0;
                 this.Top = 0;
                 this.onMax = true;
+                this.onSide = false;
             }
         }
 
