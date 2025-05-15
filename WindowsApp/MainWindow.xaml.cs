@@ -51,12 +51,13 @@ namespace WindowsApp
                 configFile = args[1];
                 LoadConfig(configFile);
             }
-            
-            currPosition = new double[] { config.position[0], config.position[1], config.position[2], config.position[3] };
-            this.Left = config.position[0];
-            this.Top = config.position[1];
-            this.Width = config.position[2];
-            this.Height = config.position[3];
+
+            string[] position = config.position.Split(",");
+            currPosition =  new double[] { double.Parse(position[0]), double.Parse(position[1]), double.Parse(position[2]), double.Parse(position[3]) };
+            this.Left = currPosition[0];
+            this.Top = currPosition[1];
+            this.Width = currPosition[2];
+            this.Height = currPosition[3];
             this.tile.Text = config.title;
 
             InitTheme();
@@ -138,7 +139,13 @@ namespace WindowsApp
             if (File.Exists(configPath))
             {
                 string configStr = File.ReadAllText(configPath);
-                config = JsonSerializer.Deserialize<Config>(configStr);
+                var options = new JsonSerializerOptions
+                {
+                    // 设置读取器选项以处理特殊字符
+                    ReadCommentHandling = JsonCommentHandling.Skip,
+                    // 或者使用自定义转换器
+                };
+                config = JsonSerializer.Deserialize<Config>(configStr, options);
 
                 if (config.theme == null)
                 {
@@ -146,17 +153,18 @@ namespace WindowsApp
                 }
                 if (config.position == null)
                 {
-                    config.position = new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 };
+                    config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
                 }
             }
             else
             {
                 config = new Config();
-                config.title = "Blank";
+                config.title = "Welcome";
                 config.uri = "http://127.0.0.1";
-                config.icon = "img\\icon32.ico";
+                // config.icon = "img\\icon32.ico";
                 config.welcomeImg = "img\\welcome.png";
                 config.theme = new Theme("#000000", "#FFFFFF");
+                config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
                 // SaveConfig();
             }
 
@@ -175,7 +183,7 @@ namespace WindowsApp
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             webView.Dispose();
-            config.position = new double[] { this.Left, this.Top, this.Width, this.Height };
+            config.position = string.Join(",", new double[] { this.Left, this.Top, this.Width, this.Height });
             SaveConfig();
         }
 

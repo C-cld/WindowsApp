@@ -12,7 +12,7 @@ namespace WindowsApp
         public string uri { get; set; }
         public string icon { get; set; }
         public string welcomeImg { get; set; }
-        public double[] position { get; set; }
+        public string position { get; set; }
         public Theme theme { get; set; }
     }
 

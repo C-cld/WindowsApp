@@ -1,8 +1,7 @@
 {
   "profiles": {
     "WindowsApp": {
-      "commandName": "Project",
-      "commandLineArgs": "config-tongyi.json"
+      "commandName": "Project"
     }
   }
 }
