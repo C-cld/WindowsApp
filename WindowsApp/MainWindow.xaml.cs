@@ -1,4 +1,5 @@
 ﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -23,35 +24,52 @@ namespace WindowsApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string configFile = "config.json";
-        private Config config;
+        
         private static readonly double ScreenWidth = SystemParameters.PrimaryScreenWidth;
         private static readonly double ScreenHeight = SystemParameters.PrimaryScreenHeight;
 
+        /// <summary>
+        /// 默认配置文件
+        /// </summary>
+        private string configFile = "config.json";
+        /// <summary>
+        /// 配置缓存
+        /// </summary>
+        private Config config;
+        /// <summary>
+        /// 处于侧边栏
+        /// </summary>
         private bool onSide = false;
+        /// <summary>
+        /// 处于最大化
+        /// </summary>
         private bool onMax = false;
-
+        /// <summary>
+        /// 当前位置缓存
+        /// </summary>
         private double[] currPosition = null;
+
         public MainWindow()
         {
             InitializeComponent();
             InitializeWindow();
-            InitializeContentAsync();
         }
 
         private void InitializeWindow()
         {
+            // 初始化配置文件
             string[] args = Environment.GetCommandLineArgs();
-            if (args == null || args.Length <= 1)
-            {
-                LoadConfig(configFile);
-            }
-            else
+            if (args != null && args.Length > 1)
             {
                 configFile = args[1];
-                LoadConfig(configFile);
             }
+            LoadConfig(configFile);
 
+            // 初始化图标
+            string iconPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.icon;
+            this.Icon = new BitmapImage(new Uri(iconPath));
+
+            // 初始化位置
             string[] position = config.position.Split(",");
             currPosition =  new double[] { double.Parse(position[0]), double.Parse(position[1]), double.Parse(position[2]), double.Parse(position[3]) };
             this.Left = currPosition[0];
@@ -59,9 +77,12 @@ namespace WindowsApp
             this.Width = currPosition[2];
             this.Height = currPosition[3];
             this.tile.Text = config.title;
+            this.Title = config.title;
 
+            // 初始化颜色
             InitTheme();
 
+            // 初始化网页
             string welcomeImgPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.welcomeImg;
             if (File.Exists(welcomeImgPath))
             {
@@ -70,9 +91,9 @@ namespace WindowsApp
                 image.UriSource = new Uri(welcomeImgPath, UriKind.RelativeOrAbsolute);
                 image.EndInit();
                 ImageBehavior.SetAnimatedSource(this.WelcomeImg, image);
-                // this.WelcomeImg.Source = new BitmapImage(new Uri(welcomeImgPath, UriKind.RelativeOrAbsolute));
             }
-            
+            this.InitializeContentAsync(this.webview);
+
         }
 
         private void InitTheme()
@@ -98,7 +119,7 @@ namespace WindowsApp
             this.sideBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, r, g, b));
         }
 
-        private async void InitializeContentAsync()
+        private async void InitializeContentAsync(WebView2 webView)
         {
             await webView.EnsureCoreWebView2Async(null);
             webView.CoreWebView2.Settings.AreDevToolsEnabled = true;
@@ -113,8 +134,6 @@ namespace WindowsApp
             Application.Current.Dispatcher.Invoke(() =>
             {
                 loadingIndicator.Visibility = Visibility.Collapsed;
-                webView.Visibility = Visibility.Visible;
-                // DisableContextMenue();
             });
         }
 
@@ -182,7 +201,7 @@ namespace WindowsApp
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            webView.Dispose();
+            webview.Dispose();
             config.position = string.Join(",", new double[] { this.Left, this.Top, this.Width, this.Height });
             SaveConfig();
         }

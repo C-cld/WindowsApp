@@ -1,8 +1,8 @@
 {
   "title": "Welcome",
-  "uri": "http://127.0.0.1",
-  //"icon": "image\\DeepSeek.ico",
-  "welcomeImg": "",
+  "uri": "https://tongyi.aliyun.com/qianwen/",
+  "icon": "image\\DeepSeek.ico",
+  "welcomeImg": "image\\loading.gif",
   "theme": {
     "bgColor": "#FFFFFF",
     "foreColor": "#000000"

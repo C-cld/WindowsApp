@@ -24,8 +24,8 @@
         </DockPanel>
 
         <!-- 窗口内容 -->
-        <Grid Margin="5,35,5,5" Background="White">
-            <webview2:WebView2 x:Name="webView" Visibility="Collapsed"/>
+        <Grid Margin="5,35,5,5" Background="White" Name="webContent">
+            <webview2:WebView2 x:Name="webview" Visibility="Visible"/>
             <Grid x:Name="loadingIndicator" Background="White" Visibility="Visible">
                 <Image x:Name="WelcomeImg" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None" />
             </Grid>
