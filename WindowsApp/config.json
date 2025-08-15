@@ -3,6 +3,7 @@
   "uri": "https://tongyi.aliyun.com/qianwen/",
   "icon": "image\\DeepSeek.ico",
   "welcomeImg": "image\\loading.gif",
+  "zoom":  "10%",
   "theme": {
     "bgColor": "#FFFFFF",
     "foreColor": "#000000"

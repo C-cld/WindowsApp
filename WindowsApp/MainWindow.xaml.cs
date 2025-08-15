@@ -1,7 +1,9 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -16,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfAnimatedGif;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WindowsApp
 {
@@ -66,8 +69,12 @@ namespace WindowsApp
             LoadConfig(configFile);
 
             // 初始化图标
-            string iconPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.icon;
-            this.Icon = new BitmapImage(new Uri(iconPath));
+            if (config.icon != null && config.icon.Trim() != "")
+            {
+                string iconPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.icon;
+                this.Icon = new BitmapImage(new Uri(iconPath));
+            }
+            
 
             // 初始化位置
             string[] position = config.position.Split(",");
@@ -92,6 +99,7 @@ namespace WindowsApp
                 image.EndInit();
                 ImageBehavior.SetAnimatedSource(this.WelcomeImg, image);
             }
+            WelcomeImg.LayoutTransform = new ScaleTransform(0.5, 0.5);
             this.InitializeContentAsync(this.webview);
 
         }
@@ -124,17 +132,34 @@ namespace WindowsApp
             await webView.EnsureCoreWebView2Async(null);
             webView.CoreWebView2.Settings.AreDevToolsEnabled = true;
             webView.CoreWebView2.Navigate(config.uri);
-            webView.CoreWebView2.DOMContentLoaded += LoadCompleted;
-            webView.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            //webView.CoreWebView2.NavigationCompleted += webView_NavigationCompleted;
+            webView.CoreWebView2.DOMContentLoaded += (sender, args) =>
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    loadingIndicator.Visibility = Visibility.Collapsed;
+                });
+            };
+            webView.CoreWebView2.NewWindowRequested += (sender, args) =>
+            {
+                args.Handled = true;
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = args.Uri,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            };
+            webView.CoreWebView2.NavigationCompleted += (sender, args) =>
+            {
+                // 缩放比例（1.0 = 100%，0.9 = 90%）
+                double value = double.Parse(config.zoom.TrimEnd('%')) / 100;
+                webView.ZoomFactor = value;
+            };
         }
 
         private void LoadCompleted(object sender, CoreWebView2DOMContentLoadedEventArgs e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                loadingIndicator.Visibility = Visibility.Collapsed;
-            });
+            
         }
 
         /// <summary>
@@ -162,7 +187,6 @@ namespace WindowsApp
                 {
                     // 设置读取器选项以处理特殊字符
                     ReadCommentHandling = JsonCommentHandling.Skip,
-                    // 或者使用自定义转换器
                 };
                 config = JsonSerializer.Deserialize<Config>(configStr, options);
 
@@ -174,6 +198,10 @@ namespace WindowsApp
                 {
                     config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
                 }
+                if (config.zoom == null)
+                {
+                    config.zoom = "100%";
+                }
             }
             else
             {
@@ -182,6 +210,7 @@ namespace WindowsApp
                 config.uri = "http://127.0.0.1";
                 // config.icon = "img\\icon32.ico";
                 config.welcomeImg = "img\\welcome.png";
+                config.zoom = "100%";
                 config.theme = new Theme("#000000", "#FFFFFF");
                 config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
                 // SaveConfig();
