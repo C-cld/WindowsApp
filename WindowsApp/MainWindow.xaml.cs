@@ -85,6 +85,10 @@ namespace WindowsApp
             this.Height = currPosition[3];
             this.tile.Text = config.title;
             this.Title = config.title;
+            if (this.Left == 0 && this.Top == 0)
+            {
+                this.onMax = true;
+            }
 
             // 初始化颜色
             InitTheme();
@@ -180,6 +184,7 @@ namespace WindowsApp
 
         public void LoadConfig(string configPath)
         {
+
             if (File.Exists(configPath))
             {
                 string configStr = File.ReadAllText(configPath);
@@ -189,31 +194,40 @@ namespace WindowsApp
                     ReadCommentHandling = JsonCommentHandling.Skip,
                 };
                 config = JsonSerializer.Deserialize<Config>(configStr, options);
-
-                if (config.theme == null)
-                {
-                    config.theme = new Theme("#000000", "#FFFFFF");
-                }
-                if (config.position == null)
-                {
-                    config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
-                }
-                if (config.zoom == null)
-                {
-                    config.zoom = "100%";
-                }
             }
-            else
+
+            if (config == null)
             {
                 config = new Config();
+            }
+
+            if (config.title == null)
+            {
                 config.title = "Welcome";
+            }
+            if (config.uri == null)
+            {
                 config.uri = "http://127.0.0.1";
-                // config.icon = "img\\icon32.ico";
+            }
+            if (config.welcomeImg == null)
+            {
                 config.welcomeImg = "img\\welcome.png";
+            }
+            if (config.zoom == null)
+            {
                 config.zoom = "100%";
+            }
+            if (config.theme == null)
+            {
                 config.theme = new Theme("#000000", "#FFFFFF");
+            }
+            if (config.position == null)
+            {
                 config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
-                // SaveConfig();
+            }
+            if (config.zoom == null)
+            {
+                config.zoom = "100%";
             }
 
         }
@@ -276,7 +290,7 @@ namespace WindowsApp
         }
 
         /// <summary>
-        /// 最大化
+        /// 最大化/还原
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -288,6 +302,7 @@ namespace WindowsApp
                 this.Top = currPosition[1];
                 this.Width = currPosition[2];
                 this.Height = currPosition[3];
+
                 this.onMax = false;
                 this.onSide = false;
             }
@@ -323,11 +338,10 @@ namespace WindowsApp
         [DllImport("user32.dll")]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-        // 调整窗口大小的方向
+        // 调整窗口大小
         private void ResizeWindow(ResizeDirection direction)
         {
-            if (onMax || onSide)
-                return;
+            if (onSide) return;
 
             IntPtr handle = new WindowInteropHelper(this).Handle;
             HwndSource.FromHwnd(handle)?.AddHook(WindowProc);
