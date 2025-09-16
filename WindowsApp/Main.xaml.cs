@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WpfAnimatedGif;
@@ -51,6 +52,7 @@ namespace WindowsApp
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            EnableShadow(new WindowInteropHelper(this).Handle);
         }
 
 
@@ -168,7 +170,7 @@ namespace WindowsApp
                 this.Left = workingArea.Left;
                 this.Top = workingArea.Top;
 
-                OuterBorder.CornerRadius = new CornerRadius(1);
+                //OuterBorder.CornerRadius = new CornerRadius(1);
 
                 this.onMax = true;
                 MaxIcon.Text = "◱";
@@ -180,7 +182,7 @@ namespace WindowsApp
                 this.Left = (ScreenWidth - this.Width) / 2;
                 this.Top = (ScreenHeight - this.Height) / 2;
 
-                OuterBorder.CornerRadius = new CornerRadius(3);
+                //OuterBorder.CornerRadius = new CornerRadius(5);
 
                 this.onMax = false;
                 MaxIcon.Text = "▢";
@@ -208,5 +210,35 @@ namespace WindowsApp
             string jsonString = JsonSerializer.Serialize(config, options);
             File.WriteAllText(configFile, jsonString);
         }
+
+        // 阴影相关
+        private void EnableShadow(IntPtr hwnd)
+        {
+            if (IsDwmEnabled())
+            {
+                var margins = new MARGINS { cxLeftWidth = 1, cxRightWidth = 1, cyTopHeight = 1, cyBottomHeight = 1 };
+                DwmExtendFrameIntoClientArea(hwnd, ref margins);
+            }
+            else
+            {
+                OuterBorder.Effect = new DropShadowEffect
+                {
+                    BlurRadius = 12,
+                    ShadowDepth = 0,
+                    Opacity = 0.12
+                };
+            }
+        }
+
+        #region DWM Interop
+        [DllImport("dwmapi.dll")] private static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS pMarInset);
+        [DllImport("dwmapi.dll")] private static extern int DwmIsCompositionEnabled(out bool enabled);
+        private static bool IsDwmEnabled()
+        {
+            try { DwmIsCompositionEnabled(out bool enabled); return enabled; } catch { return false; }
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MARGINS { public int cxLeftWidth, cxRightWidth, cyTopHeight, cyBottomHeight; }
+        #endregion
     }
 }
