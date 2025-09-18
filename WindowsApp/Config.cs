@@ -14,18 +14,6 @@ namespace WindowsApp
         public string welcomeImg { get; set; }
         public string position { get; set; }
         public string zoom { get; set; }
-        public Theme theme { get; set; }
-    }
-
-    class Theme
-    {
-        public string bgColor { get; set; }
-        public string foreColor { get; set; }
-
-        public Theme(string foreColor, string bgColor)
-        {
-            this.foreColor = foreColor;
-            this.bgColor = bgColor;
-        }
+        public string theme { get; set; }
     }
 }

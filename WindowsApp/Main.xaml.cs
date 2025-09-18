@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -69,12 +70,18 @@ namespace WindowsApp
             {
                 configFile = args[1];
             }
-            LoadConfig(configFile);
+            if (!LoadConfig(configFile))
+            {
+                return;
+            }
             // 初始化图标
             if (config.icon != null && config.icon.Trim() != "")
             {
                 string iconPath = AppDomain.CurrentDomain.BaseDirectory + System.IO.Path.DirectorySeparatorChar + config.icon;
-                this.WindowIcon.Source = new BitmapImage(new Uri(iconPath));
+                if (File.Exists(iconPath))
+                {
+                    this.WindowIcon.Source = new BitmapImage(new Uri(iconPath));
+                }
             }
             // 初始化位置
             string[] position = config.position.Split(",");
@@ -89,45 +96,51 @@ namespace WindowsApp
             {
                 ToggleMaximizeRestore();
             }
+            // 初始化主题
+            if (config.theme == null || config.theme.Trim().ToLower() == "light")
+            {
+                OuterBorder.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                WindowTitle.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
+                SideBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
+                MinBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
+                MaxBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
+                CloseBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
+            }
+            else if (config.theme.Trim().ToLower() == "dark")
+            {
+                OuterBorder.Background = new SolidColorBrush(Color.FromArgb(0, 51, 51, 51));
+                WindowTitle.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                SideBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                MinBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                MaxBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                CloseBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+            }
             // 初始化网页
             this.InitializeContentAsync(this.webview);
         }
 
-        public void LoadConfig(string configPath)
+        public bool LoadConfig(string configPath)
         {
-
-            if (File.Exists(configPath))
+            try
             {
-                string configStr = File.ReadAllText(configPath);
-                var options = new JsonSerializerOptions
+                if (File.Exists(configPath))
                 {
-                    ReadCommentHandling = JsonCommentHandling.Skip,
-                };
-                config = JsonSerializer.Deserialize<Config>(configStr, options);
+                    string configStr = File.ReadAllText(configPath);
+                    var options = new JsonSerializerOptions
+                    {
+                        ReadCommentHandling = JsonCommentHandling.Skip,
+                    };
+                    config = JsonSerializer.Deserialize<Config>(configStr, options);
+                }
+                return true;
             }
-
-            if (config == null)
+            catch(Exception e)
             {
-                config = new Config();
+                webview.Visibility = Visibility.Collapsed;
+                Tips.Visibility = Visibility.Visible;
+                Tips.Text = "配置文件读取失败，请检查 " + configPath + " 文件内容是否正确。\n\n" + e.Message;
             }
-
-            if (config.title == null)
-            {
-                config.title = "Welcome";
-            }
-            if (config.uri == null)
-            {
-                config.uri = "http://127.0.0.1/";
-            }
-            if (config.zoom == null)
-            {
-                config.zoom = "100%";
-            }
-            if (config.position == null)
-            {
-                config.position = string.Join(",", new double[] { this.Left, this.Top, ScreenWidth * 0.75, ScreenHeight * 0.75 });
-            }
-
+            return false;
         }
 
         private async void InitializeContentAsync(WebView2 webView)
@@ -197,8 +210,11 @@ namespace WindowsApp
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             webview.Dispose();
-            config.position = string.Join(",", new double[] { this.Left, this.Top, this.Width, this.Height });
-            SaveConfig();
+            if (config != null)
+            {
+                config.position = string.Join(",", new double[] { this.Left, this.Top, this.Width, this.Height });
+                SaveConfig();
+            }
         }
 
         private void SaveConfig()

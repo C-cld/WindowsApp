@@ -7,7 +7,6 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:local="clr-namespace:WindowsApp"
         mc:Ignorable="d"
-        Title="自定义窗口标题栏示例"
         Width="900" Height="600"
         WindowStyle="None"
         AllowsTransparency="False"
@@ -17,10 +16,9 @@
         <!-- 标题栏按钮样式 -->
         <Style x:Key="WindowButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="46"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Height" Value="25"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="Black"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Template">
@@ -45,7 +43,7 @@
 
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome
-            CaptionHeight="32"
+            CaptionHeight="25"
             ResizeBorderThickness="6"
             GlassFrameThickness="0"
             UseAeroCaptionButtons="False"/>
@@ -58,14 +56,14 @@
             BorderThickness="1" >
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="25"/>
                 <!-- 标题栏 -->
                 <RowDefinition Height="*"/>
                 <!-- 内容区 -->
             </Grid.RowDefinitions>
 
             <!-- 自定义标题栏 -->
-            <Grid Grid.Row="0" x:Name="TitleBar" Background="Transparent">
+            <Grid Grid.Row="0" x:Name="TitleBar">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -75,28 +73,29 @@
                 <!-- 应用图标 -->
                 <Image x:Name="WindowIcon" Source="/CustomChromeDemo;component/Resources/app.ico" Width="16" Height="16" Margin="8,0,4,0" VerticalAlignment="Center" Grid.Column="0"/>
                 <!-- 标题文字 -->
-                <TextBlock x:Name="WindowTitle" Text="应用名称" VerticalAlignment="Center" FontSize="13" Foreground="#222" Grid.Column="1"/>
+                <TextBlock x:Name="WindowTitle" Text="应用名称" VerticalAlignment="Center" FontSize="13" Grid.Column="1"/>
                 <!-- 右上角按钮 -->
                 <StackPanel Orientation="Horizontal" Grid.Column="2"
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,0,0" shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                    <Button Style="{StaticResource WindowButtonStyle}" ToolTip="侧边停靠">
+                    <Button x:Name="SideBtn" Style="{StaticResource WindowButtonStyle}" ToolTip="侧边停靠">
                         <TextBlock Text="◧" FontSize="15"/>
                     </Button>
-                    <Button Style="{StaticResource WindowButtonStyle}" Click="MinimizeButton_Click" ToolTip="最小化">
+                    <Button x:Name="MinBtn" Style="{StaticResource WindowButtonStyle}" Click="MinimizeButton_Click" ToolTip="最小化">
                         <TextBlock Text="–" FontSize="15"/>
                     </Button>
-                    <Button Style="{StaticResource WindowButtonStyle}" Click="MaxRestoreButton_Click" ToolTip="最大化/还原" x:Name="MaxRestoreButton">
+                    <Button x:Name="MaxBtn" Style="{StaticResource WindowButtonStyle}" Click="MaxRestoreButton_Click" ToolTip="最大化/还原">
                         <TextBlock x:Name="MaxIcon" Text="▢" FontSize="15"/>
                     </Button>
-                    <Button Style="{StaticResource WindowButtonStyle}" Click="CloseButton_Click" ToolTip="关闭">
+                    <Button x:Name="CloseBtn" Style="{StaticResource WindowButtonStyle}" Click="CloseButton_Click" ToolTip="关闭">
                         <TextBlock Text="✕" FontSize="15"/>
                     </Button>
                 </StackPanel>
             </Grid>
 
             <!-- 内容区 -->
-            <Grid Grid.Row="1" Background="LightGray">
+            <Grid Grid.Row="1" Background="White" x:Name="Content">
+                <TextBlock x:Name="Tips" Text="" Visibility="Hidden"></TextBlock>
                 <webview2:WebView2 x:Name="webview" Visibility="Visible"/>
             </Grid>
         </Grid>

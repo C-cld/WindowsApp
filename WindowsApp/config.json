@@ -1,7 +1,7 @@
 {
-  "title": "Welcome",
-  "uri": "https://tongyi.aliyun.com/qianwen/",
-  "icon": "image\\DeepSeek.ico",
-  "welcomeImg": "image\\loading.gif",
-  "zoom":  "100%"
+  "title": "嘀嗒清单",
+  "uri": "https://dida365.com/webapp",
+  "icon": "image\\dida.ico",
+  "position": "811,302,526,720",
+  "zoom": "100%"
 }
