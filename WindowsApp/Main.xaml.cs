@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebView2.Wpf;
+﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Shell;
 using WpfAnimatedGif;
 
 namespace WindowsApp
@@ -40,23 +42,96 @@ namespace WindowsApp
         /// 配置缓存
         /// </summary>
         private Config config;
-        /// <summary>
-        /// 当前位置缓存
-        /// </summary>
-        private double[] currPosition = null;
 
         public Main()
         {
             InitializeComponent();
             InitializeWindow();
+            this.SourceInitialized += MainWindow_SourceInitialized;
+
         }
+
+        private void MainWindow_SourceInitialized(object sender, EventArgs e)
+        {
+            /*HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            if (source != null)
+            {
+                source.AddHook(WndProc);
+            }*/
+        }
+
+        /*private const int RESIZE_HANDLE_SIZE = 5;
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_NCHITTEST = 0x0084;
+            const int HTLEFT = 10;
+            const int HTRIGHT = 11;
+            const int HTTOP = 12;
+            const int HTTOPLEFT = 13;
+            const int HTTOPRIGHT = 14;
+            const int HTBOTTOM = 15;
+            const int HTBOTTOMLEFT = 16;
+            const int HTBOTTOMRIGHT = 17;
+
+
+            if (msg == WM_NCHITTEST)
+            {
+                handled = true;
+                return (IntPtr)HTTOPRIGHT;
+                *//*Point cursorPos = Mouse.GetPosition(this); // 相对于窗口客户区左上角
+                Debug.WriteLine("X:" + cursorPos.X + " Y:" + cursorPos.Y);
+                Rect clientRect = new Rect(this.Top, this.Left, this.ActualWidth, this.ActualHeight);
+
+                if (cursorPos.X <= RESIZE_HANDLE_SIZE)
+                {
+                    if (cursorPos.Y <= RESIZE_HANDLE_SIZE)
+                    {
+                        handled = true; return (IntPtr)HTTOPLEFT;
+                    }
+                    else if (cursorPos.Y >= clientRect.Height - RESIZE_HANDLE_SIZE)
+                    {
+                        handled = true; return (IntPtr)HTBOTTOMLEFT;
+                    }
+                    else
+                    {
+                        handled = true; return (IntPtr)HTLEFT;
+                    }
+                }
+                else if (cursorPos.X >= clientRect.Width - RESIZE_HANDLE_SIZE)
+                {
+                    if (cursorPos.Y <= RESIZE_HANDLE_SIZE)
+                    {
+                        handled = true; return (IntPtr)HTTOPRIGHT;
+                    }
+                    else if (cursorPos.Y >= clientRect.Height - RESIZE_HANDLE_SIZE)
+                    {
+                        handled = true; return (IntPtr)HTBOTTOMRIGHT;
+                    }
+                    else
+                    {
+                        handled = true; return (IntPtr)HTRIGHT;
+                    }
+                }
+                else if (cursorPos.Y <= RESIZE_HANDLE_SIZE)
+                {
+                    handled = true; return (IntPtr)HTTOP;
+                }
+                else if (cursorPos.Y >= clientRect.Height - RESIZE_HANDLE_SIZE)
+                {
+                    handled = true; return (IntPtr)HTBOTTOM;
+                }*//*
+            }
+
+            return IntPtr.Zero;
+        }*/
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            EnableShadow(new WindowInteropHelper(this).Handle);
+            
         }
 
-
+        private void TopBtn_Click(object sender, RoutedEventArgs e) => ToggleTopRestore();
         private void MinimizeButton_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
         private void MaxRestoreButton_Click(object sender, RoutedEventArgs e) => ToggleMaximizeRestore();
         private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close();
@@ -85,12 +160,10 @@ namespace WindowsApp
             }
             // 初始化位置
             string[] position = config.position.Split(",");
-            currPosition = new double[] { double.Parse(position[0]), double.Parse(position[1]), double.Parse(position[2]), double.Parse(position[3]) };
-            this.Left = currPosition[0];
-            this.Top = currPosition[1];
-            this.Width = currPosition[2];
-            this.Height = currPosition[3];
-            this.WindowTitle.Text = config.title;
+            this.Left = double.Parse(position[0]);
+            this.Top = double.Parse(position[1]);
+            this.Width = double.Parse(position[2]);
+            this.Height = double.Parse(position[3]);
             this.Title = config.title;
             if (this.Left == 0 && this.Top == 0)
             {
@@ -99,21 +172,9 @@ namespace WindowsApp
             // 初始化主题
             if (config.theme == null || config.theme.Trim().ToLower() == "light")
             {
-                OuterBorder.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                WindowTitle.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
-                SideBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
-                MinBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
-                MaxBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
-                CloseBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
             }
             else if (config.theme.Trim().ToLower() == "dark")
             {
-                OuterBorder.Background = new SolidColorBrush(Color.FromArgb(0, 51, 51, 51));
-                WindowTitle.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                SideBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                MinBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                MaxBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                CloseBtn.Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
             }
             // 初始化网页
             this.InitializeContentAsync(this.webview);
@@ -145,12 +206,37 @@ namespace WindowsApp
 
         private async void InitializeContentAsync(WebView2 webView)
         {
-            await webView.EnsureCoreWebView2Async(null);
+            webView.CoreWebView2InitializationCompleted += (sender, args) =>
+            {
+                if (args.IsSuccess)
+                {
+                    //webView.CoreWebView2.Settings.UserAgent =
+                    //    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
+
+                    // 或者设置为 Android 设备的 UA
+                    // webView.CoreWebView2.Settings.UserAgent =
+                    //     "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36";
+
+                    webView.CoreWebView2.Navigate(config.uri);
+                }
+            };
+            // 指定一个固定目录保存 WebView2 的用户数据
+            var env = await CoreWebView2Environment.CreateAsync(userDataFolder: System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "WindowsAppData"));
+            await webView.EnsureCoreWebView2Async(env);
+
             webView.CoreWebView2.Settings.AreDevToolsEnabled = true;
-            webView.CoreWebView2.Navigate(config.uri);
+            //webView.CoreWebView2.Navigate(config.uri);
             webView.CoreWebView2.DOMContentLoaded += (sender, args) =>
             {
                 
+            };
+            webView.CoreWebView2.NavigationCompleted += (sender, args) =>
+            {
+                // 缩放比例（1.0 = 100%，0.9 = 90%）
+                double value = double.Parse(config.zoom.TrimEnd('%')) / 100;
+                webView.ZoomFactor = value;
             };
             webView.CoreWebView2.NewWindowRequested += (sender, args) =>
             {
@@ -162,12 +248,20 @@ namespace WindowsApp
                 };
                 Process.Start(psi);
             };
-            webView.CoreWebView2.NavigationCompleted += (sender, args) =>
+        }
+
+        private void ToggleTopRestore()
+        {
+            if (this.Topmost)
             {
-                // 缩放比例（1.0 = 100%，0.9 = 90%）
-                double value = double.Parse(config.zoom.TrimEnd('%')) / 100;
-                webView.ZoomFactor = value;
-            };
+                this.TopBtn.Background = Brushes.Transparent;
+                this.Topmost = false;
+            }
+            else
+            {
+                this.TopBtn.Background = new SolidColorBrush(Color.FromArgb(255, 238, 238, 238));
+                this.Topmost = true;
+            }
         }
 
         private void ToggleMaximizeRestore()
@@ -186,7 +280,7 @@ namespace WindowsApp
                 //OuterBorder.CornerRadius = new CornerRadius(1);
 
                 this.onMax = true;
-                MaxIcon.Text = "◱";
+                MaxIcon.Text = "🗗";
             }
             else
             {
@@ -198,13 +292,13 @@ namespace WindowsApp
                 //OuterBorder.CornerRadius = new CornerRadius(5);
 
                 this.onMax = false;
-                MaxIcon.Text = "▢";
+                MaxIcon.Text = "🗖";
             }
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            this.currPosition = new double[] { this.Left, this.Top, this.Width, this.Height };
+            
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -227,34 +321,6 @@ namespace WindowsApp
             File.WriteAllText(configFile, jsonString);
         }
 
-        // 阴影相关
-        private void EnableShadow(IntPtr hwnd)
-        {
-            if (IsDwmEnabled())
-            {
-                var margins = new MARGINS { cxLeftWidth = 1, cxRightWidth = 1, cyTopHeight = 1, cyBottomHeight = 1 };
-                DwmExtendFrameIntoClientArea(hwnd, ref margins);
-            }
-            else
-            {
-                OuterBorder.Effect = new DropShadowEffect
-                {
-                    BlurRadius = 12,
-                    ShadowDepth = 0,
-                    Opacity = 0.12
-                };
-            }
-        }
-
-        #region DWM Interop
-        [DllImport("dwmapi.dll")] private static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS pMarInset);
-        [DllImport("dwmapi.dll")] private static extern int DwmIsCompositionEnabled(out bool enabled);
-        private static bool IsDwmEnabled()
-        {
-            try { DwmIsCompositionEnabled(out bool enabled); return enabled; } catch { return false; }
-        }
-        [StructLayout(LayoutKind.Sequential)]
-        private struct MARGINS { public int cxLeftWidth, cxRightWidth, cyTopHeight, cyBottomHeight; }
-        #endregion
+        
     }
 }
